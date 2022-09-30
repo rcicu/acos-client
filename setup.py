@@ -14,7 +14,7 @@ except TypeError:
 
 setup(
     name = "acos-client",
-    version = "2.9.1",
+    version = "2.9.2",
     packages = find_packages(),
 
     author = "A10 Networks",
@@ -23,7 +23,7 @@ setup(
     license = "Apache",
     keywords = "a10 axapi acos adc slb load balancer",
     url = "https://github.com/a10networks/acos-client",
-    long_description = long_description, 
+    long_description = long_description,
     long_description_content_type = "text/markdown",
 
     classifiers = [
