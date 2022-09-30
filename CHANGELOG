@@ -1,0 +1,32 @@
+---------------------------
+acos-client CHANGELOG
+---------------------------
+
+acos-client. Changes tracked from 1.4.2 > onward
+* 1.4.7
+- Added IPv6 support for aXAPI v21 and v30 as well as IPv6 test cases
+- Updated ACOS response messages
+- IPv6 enhancements to t.py
+- Improved t.py error handling and better support for aXAPI v2.1 
+
+
+* 1.4.6
+- Fixed duplicate SG creation bug.
+
+* 1.4.5
+- Fixed arp-disable defaulting to true when present in payload
+- Improved unit test coverage for SLB modules
+- Usage of responses library for mocking client
+
+
+* 1.4.4
+- Adds VLAN, VE/LIF interfaces, VTEP support for AXAPI v3.0
+- VRRP-A support for AXAPI v3.0
+- Enhanced error handling for DHCP offer failures
+- Added linebreaks to this file between versions to make it more readable.
+
+* 1.4.3
+- Ensure passing of port and correct param name for HM port override
+
+* 1.4.2
+- Checks for name-based configuration elements to ensure other business rules do not override configured defaults
