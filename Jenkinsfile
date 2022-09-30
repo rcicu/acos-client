@@ -10,6 +10,7 @@ pipeline {
             agent {
                 dockerfile {
                     reuseNode true
+                    args '--user spdev_nwp_service --group-add 118'
                 }
             }
             stages {
