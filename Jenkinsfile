@@ -16,7 +16,7 @@ pipeline {
             stages {
                 stage('Unit Tests and Other Checks by tox') {
                     steps {
-                        sh 'tox'
+                        sh 'tox -e py36 -e pep8'  // Running only py36 and pep8 environment
                     }
                 }
                 stage('Build') {
