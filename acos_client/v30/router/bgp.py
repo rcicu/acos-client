@@ -40,15 +40,34 @@ class NeighborIPv4(BgpBase):
         bfd: Optional[bool] = None, description: Optional[str] = None,
         activate: Optional[bool] = None, multihop: Optional[bool] = None,
         rm_in: Optional[str] = None, rm_out: Optional[bool] = None,
-        peer_group_name: Optional[str] = None,
+        peer_group_name: Optional[str] = None, remote_as: Optional[int] = None,
         send_community: Optional[str] = None
-    ):
+    ) -> Dict:
+        """
+        Create IPv4 neighbor
+
+        :param ip: Neighbor IP Address
+        :param asn: Local BGP ASN
+        :param bfd: Enable BFP
+        :param description: Description for the neighbor
+        :param activate: Activate/DeActivate neighbor
+        :param multihop: Enable BGP multi-hp
+        :param rm_in: Specify inbound RouteMap
+        :param rm_out: Specify outbound RouteMap
+        :param peer_group_name: Assign the neighbor to a peer
+            group
+        :param send_community: Secify where to send commnunity
+            Allowed values: "both", "none", "standard", "extended"
+        :param remote_as: Specify neighbor remote AS number
+        :return Dict:
+        """
         payload = self._build_payload(
             ip=ip, bfd=bfd, description=description,
             activate=activate, multihop=multihop,
             rm_in=rm_in, rm_out=rm_out,
             peer_group_name=peer_group_name,
-            send_community=send_community
+            send_community=send_community,
+            remote_as=remote_as
         )
         _url = f"{self.url_prefix}{asn}/{self.url_suffix}"
         print(f"URL NeighborIPv4 Create: {_url}")
@@ -60,14 +79,33 @@ class NeighborIPv4(BgpBase):
         bfd: Optional[bool] = None, description: Optional[str] = None,
         activate: Optional[bool] = None, multihop: Optional[bool] = None,
         rm_in: Optional[str] = None, rm_out: Optional[bool] = None,
-        peer_group_name: Optional[str] = None,
+        peer_group_name: Optional[str] = None, remote_as: Optional[int] = None,
         send_community: Optional[str] = None
-    ):
+    ) -> Dict:
+        """
+        Update IPv4 neighbor
+
+        :param ip: Neighbor IP Address
+        :param asn: Local BGP ASN
+        :param bfd: Enable BFP
+        :param description: Description for the neighbor
+        :param activate: Activate/DeActivate neighbor
+        :param multihop: Enable BGP multi-hp
+        :param rm_in: Specify inbound RouteMap
+        :param rm_out: Specify outbound RouteMap
+        :param remote_as: Specify neighbor remote AS number
+        :param peer_group_name: Assign the neighbor to a peer
+            group
+        :param send_community: Secify where to send commnunity
+            Allowed values: "both", "none", "standard", "extended"
+        :return Dict:
+        """
         payload = self._build_payload(
             ip=ip, bfd=bfd, description=description,
             activate=activate, multihop=multihop,
             rm_in=rm_in, rm_out=rm_out,
             peer_group_name=peer_group_name,
+            remote_as=remote_as,
             send_community=send_community
         )
         _url = f"{self.url_prefix}{asn}/{self.url_suffix}"
@@ -80,7 +118,7 @@ class NeighborIPv4(BgpBase):
         bfd: Optional[bool] = None, description: Optional[str] = None,
         activate: Optional[bool] = None, multihop: Optional[bool] = None,
         rm_in: Optional[str] = None, rm_out: Optional[bool] = None,
-        peer_group_name: Optional[str] = None,
+        peer_group_name: Optional[str] = None, remote_as: Optional[int] = None,
         send_community: Optional[str] = None
     ) -> Dict:
         rv = dict()
@@ -95,6 +133,8 @@ class NeighborIPv4(BgpBase):
             rv['peer-group-name'] = peer_group_name
         if multihop is not None:
             rv['ebgp-multihop'] = 1 if multihop is True else 0
+        if remote_as in not None:
+            rv['nbr-remote-as'] = remote_as
         if send_community is not None:
             if send_community not in ["both", "none", "standard", "extended"]:
                 raise ValueError(
@@ -124,6 +164,24 @@ class PeerGroupIPv4Neighbor(BgpBase):
         rm_in: Optional[str] = None, rm_out: Optional[bool] = None,
         send_community: Optional[str] = None
     ) -> Dict:
+        """
+        Create IPv4 neighbor peer-group
+
+        :param name: Peer-group name
+        :param asn: Local BGP ASN
+        :param bfd: Enable BFP
+        :param remote_as: Specify remote AS number
+        :param activate: Activate/DeActivate neighbor
+        :param route_refresh: Enable route-refresh
+        :param shutdown: Shutdown peer-group
+        :param multihop: Enable BGP multi-hp
+        :param rm_in: Specify inbound RouteMap
+        :param rm_out: Specify outbound RouteMap
+        :param next_hop_self: Enable next-hop-self
+        :param send_community: Specify where to send community
+            Allowed values: "both", "none", "standard", "extended"
+        :return Dict:
+        """
         payload = self._build_payload(
             name=name, remote_as=remote_as, bfd=bfd,
             route_refresh=route_refresh, activate=activate, multihop=multihop,
@@ -144,6 +202,24 @@ class PeerGroupIPv4Neighbor(BgpBase):
         rm_in: Optional[str] = None, rm_out: Optional[bool] = None,
         send_community: Optional[str] = None
     ) -> Dict:
+        """
+        Update IPv4 neighbor peer-group
+
+        :param name: Peer-group name
+        :param asn: Local BGP ASN
+        :param bfd: Enable BFP
+        :param remote_as: Specify remote AS number
+        :param activate: Activate/DeActivate neighbor
+        :param route_refresh: Enable route-refresh
+        :param shutdown: Shutdown peer-group
+        :param multihop: Enable BGP multi-hp
+        :param rm_in: Specify inbound RouteMap
+        :param rm_out: Specify outbound RouteMap
+        :param next_hop_self: Enable next-hop-self
+        :param send_community: Specify where to send community
+            Allowed values: "both", "none", "standard", "extended"
+        :return Dict:
+        """
         payload = self._build_payload(
             name=name, remote_as=remote_as, bfd=bfd,
             route_refresh=route_refresh, activate=activate, multihop=multihop,
@@ -235,6 +311,22 @@ class NeighborIpv6(BgpBase):
         rm_in: Optional[str] = None, rm_out: Optional[bool] = None,
         peer_group_name: Optional[str] = None,
     ) -> Dict:
+        """
+        Create IPv6 neighbor
+
+        :param ipv6: Neighbor IP Address
+        :param asn: Local BGP ASN
+        :param activate: Activate/DeActivate neighbor
+        :param multihop: Enable BGP multi-hp
+        :param rm_in: Specify inbound RouteMap
+        :param rm_out: Specify outbound RouteMap
+        :param next_hop_self: Enable next-hop-self
+        :param peer_group_name: Assign the neighbor to a peer
+            group
+        :param send_community: Specify where to send community
+            Allowed values: "both", "none", "standard", "extended"
+        :return Dict:
+        """
         payload = self._build_payload(
             ipv6=ipv6, send_community=send_community,
             next_hop_self=next_hop_self, activate=activate,
@@ -253,6 +345,22 @@ class NeighborIpv6(BgpBase):
         rm_in: Optional[str] = None, rm_out: Optional[bool] = None,
         peer_group_name: Optional[str] = None,
     ) -> Dict:
+        """
+        Update IPv6 neighbor
+
+        :param ipv6: Neighbor IP Address
+        :param asn: Local BGP ASN
+        :param activate: Activate/DeActivate neighbor
+        :param multihop: Enable BGP multi-hp
+        :param rm_in: Specify inbound RouteMap
+        :param rm_out: Specify outbound RouteMap
+        :param next_hop_self: Enable next-hop-self
+        :param peer_group_name: Assign the neighbor to a peer
+            group
+        :param send_community: Specify where to send community
+            Allowed values: "both", "none", "standard", "extended"
+        :return Dict:
+        """
         payload = self._build_payload(
             ipv6=ipv6, send_community=send_community,
             next_hop_self=next_hop_self, activate=activate,
@@ -305,6 +413,19 @@ class PeerGroupIpv6(BgpBase):
         next_hop_self: Optional[bool] = None,
         max_prefix: Optional[int] = None
     ) -> Dict:
+        """
+        For IPv6, in order to use a peergroup that you created before,
+        you need to activate first that peer-group into IPv6 AF container
+
+        :param name: Peer-group name
+        :param asn: Local BGP AS Number
+        :param activate: Activate/DeActivate neighbor
+        :param max_prefix: Maximum number of prefix accept from this pee
+        :param next_hop_self: Enable next-hop-self
+        :param send_community: Specify where to send community
+            Allowed values: "both", "none", "standard", "extended"
+        :return Dict:
+        """
         payload = self._build_payload(
             name=name, activate=activate,
             send_community=send_community, next_hop_self=next_hop_self,
@@ -316,11 +437,23 @@ class PeerGroupIpv6(BgpBase):
 
     def update(
         self,
-        name: str, activate: Optional[bool] = None,
+        name: str, asn: int, activate: Optional[bool] = None,
         send_community: Optional[str] = None,
         next_hop_self: Optional[bool] = None,
         max_prefix: Optional[int] = None
     ) -> Dict:
+        """
+        Update IPv6 peer-group values
+
+        :param name: Peer-group name
+        :param asn: Local BGP AS Number
+        :param activate: Activate/DeActivate neighbor
+        :param max_prefix: Maximum number of prefix accept from this pee
+        :param next_hop_self: Enable next-hop-self
+        :param send_community: Specify where to send community
+            Allowed values: "both", "none", "standard", "extended"
+        :return Dict:
+        """
         payload = self._build_payload(
             name=name, activate=activate,
             send_community=send_community, next_hop_self=next_hop_self,
