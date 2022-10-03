@@ -14,7 +14,7 @@ except TypeError:
 
 setup(
     name = "acos-client",
-    version = "2.9.2",
+    version = "2.9.2.viasat",
     packages = find_packages(),
 
     author = "A10 Networks",
