@@ -1,0 +1,399 @@
+from ..base import BaseV30
+from .utils import create_route_map_structure
+
+from typing import Dict, Optional, Union
+
+from pprint import pprint
+
+
+class BgpBase(BaseV30):
+
+    def __init__(self, client):
+        super(BgpBase, self).__init__(client=client)
+        self.url_prefix = f"/router/bgp/"
+        self.url_suffix = ""
+
+    def get_list(self, asn: int) -> Dict:
+        print(f"GET List URL: {self.url_prefix}{asn}/{self.url_suffix}")
+        return self._get(f"{self.url_prefix}{asn}/{self.url_suffix}")
+
+    def get(self, asn: int, key: Optional[Union[str, int]] = None) -> Dict:
+        print(f"GET URL: {self.url_prefix}{asn}/{self.url_suffix}{key}")
+        if key is not None:
+            return self._get(f"{self.url_prefix}{asn}/{self.url_suffix}{key}")
+        else:
+            return self._get(f"{self.url_prefix}{asn}/{self.url_suffix}")
+
+    def delete(self, asn: int, key: Union[str, int]) -> Dict:
+        return self._delete(f"{self.url_prefix}{asn}{self.url_suffix}{key}")
+
+
+class NeighborIPv4(BgpBase):
+
+    def __init__(self, client):
+        super(NeighborIPv4, self).__init__(client=client)
+        self.url_suffix = "neighbor/ipv4-neighbor/"
+
+    def create(
+        self,
+        ip: str, asn: int,
+        bfd: Optional[bool] = None, description: Optional[str] = None,
+        activate: Optional[bool] = None, multihop: Optional[bool] = None,
+        rm_in: Optional[str] = None, rm_out: Optional[bool] = None,
+        peer_group_name: Optional[str] = None,
+        send_community: Optional[str] = None
+    ):
+        payload = self._build_payload(
+            ip=ip, bfd=bfd, description=description,
+            activate=activate, multihop=multihop,
+            rm_in=rm_in, rm_out=rm_out,
+            peer_group_name=peer_group_name,
+            send_community=send_community
+        )
+        _url = f"{self.url_prefix}{asn}/{self.url_suffix}"
+        print(f"URL NeighborIPv4 Create: {_url}")
+        return self._post(_url, payload)
+
+    def update(
+        self,
+        ip: str, asn: int,
+        bfd: Optional[bool] = None, description: Optional[str] = None,
+        activate: Optional[bool] = None, multihop: Optional[bool] = None,
+        rm_in: Optional[str] = None, rm_out: Optional[bool] = None,
+        peer_group_name: Optional[str] = None,
+        send_community: Optional[str] = None
+    ):
+        payload = self._build_payload(
+            ip=ip, bfd=bfd, description=description,
+            activate=activate, multihop=multihop,
+            rm_in=rm_in, rm_out=rm_out,
+            peer_group_name=peer_group_name,
+            send_community=send_community
+        )
+        _url = f"{self.url_prefix}{asn}/{self.url_suffix}"
+        pprint(f"Url NeighborIPv4 Update: {_url}")
+        return self._post(f"{_url}{ip}", payload)
+
+    @staticmethod
+    def _build_payload(
+        ip: str,
+        bfd: Optional[bool] = None, description: Optional[str] = None,
+        activate: Optional[bool] = None, multihop: Optional[bool] = None,
+        rm_in: Optional[str] = None, rm_out: Optional[bool] = None,
+        peer_group_name: Optional[str] = None,
+        send_community: Optional[str] = None
+    ) -> Dict:
+        rv = dict()
+        rv['neighbor-ipv4'] = ip
+        if bfd is not None:
+            rv['bfd'] = 1 if bfd is True else 0
+        if description is not None:
+            rv['description'] = description
+        if activate is not None:
+            rv['activate'] = 1 if activate is True else 0
+        if peer_group_name is not None:
+            rv['peer-group-name'] = peer_group_name
+        if multihop is not None:
+            rv['ebgp-multihop'] = 1 if multihop is True else 0
+        if send_community is not None:
+            if send_community not in ["both", "none", "standard", "extended"]:
+                raise ValueError(
+                    f"send_community val {send_community} not in accepted values: both, none, standard, extended"
+                )
+            rv['send-community-val'] = send_community
+        if rm_in is not None or rm_out is not None:
+            rv['neighbor-route-map-lists'] = create_route_map_structure(rm_in=rm_in, rm_out=rm_out)
+        return {
+            "ipv4-neighbor": rv
+        }
+
+
+class PeerGroupIPv4Neighbor(BgpBase):
+
+    def __init__(self, client):
+        super(PeerGroupIPv4Neighbor, self).__init__(client=client)
+        self.url_suffix = f"neighbor/peer-group-neighbor/"
+
+    def create(
+        self,
+        asn: int,
+        name: Optional[str] = None, remote_as: Optional[int] = None,
+        bfd: Optional[bool] = None, route_refresh: Optional[bool] = None,
+        activate: Optional[bool] = None, multihop: Optional[bool] = None,
+        shutdown: Optional[bool] = None, next_hop_self: Optional[bool] = None,
+        rm_in: Optional[str] = None, rm_out: Optional[bool] = None,
+        send_community: Optional[str] = None
+    ) -> Dict:
+        payload = self._build_payload(
+            name=name, remote_as=remote_as, bfd=bfd,
+            route_refresh=route_refresh, activate=activate, multihop=multihop,
+            shutdown=shutdown, next_hop_self=next_hop_self,
+            rm_in=rm_in, rm_out=rm_out, send_community=send_community
+        )
+        _url = f"{self.url_prefix}{asn}/{self.url_suffix}"
+        print(f"URL PeerGroupIPv4Neighbor Create: {_url}")
+        return self._post(_url, payload)
+
+    def update(
+        self,
+        asn: int,
+        name: Optional[str] = None, remote_as: Optional[int] = None,
+        bfd: Optional[bool] = None, route_refresh: Optional[bool] = None,
+        activate: Optional[bool] = None, multihop: Optional[bool] = None,
+        shutdown: Optional[bool] = None, next_hop_self: Optional[bool] = None,
+        rm_in: Optional[str] = None, rm_out: Optional[bool] = None,
+        send_community: Optional[str] = None
+    ) -> Dict:
+        payload = self._build_payload(
+            name=name, remote_as=remote_as, bfd=bfd,
+            route_refresh=route_refresh, activate=activate, multihop=multihop,
+            shutdown=shutdown, next_hop_self=next_hop_self,
+            rm_in=rm_in, rm_out=rm_out, send_community=send_community
+        )
+        _url = f"{self.url_prefix}{asn}/{self.url_suffix}"
+        print(f"URL PeerGroupIPv4Neighbor Update: {_url}")
+        return self._post(f"{_url}{name}", payload)
+
+    @staticmethod
+    def _build_payload(
+        name: Optional[str] = None, remote_as: Optional[int] = None,
+        bfd: Optional[bool] = None, route_refresh: Optional[bool] = None,
+        activate: Optional[bool] = None, multihop: Optional[bool] = None,
+        shutdown: Optional[bool] = None, next_hop_self: Optional[bool] = None,
+        rm_in: Optional[str] = None, rm_out: Optional[bool] = None,
+        send_community: Optional[str] = None
+    ) -> Dict:
+        rv = {
+            'peer-group-key': 1,
+            'activate': 1,
+            'allowas-in': 0,
+            'dynamic': 0,
+            'route-refresh': 1,
+            'extended-nexthop': 0,
+            'collide-established': 0,
+            'default-originate': 0,
+            'disallow-infinite-holdtime': 0,
+            'dont-capability-negotiate': 0,
+            'ebgp-multihop': 0,
+            'enforce-multihop': 0,
+            'bfd': 0,
+            'maximum-prefix': 128,
+            'next-hop-self': 0,
+            'override-capability': 0,
+            'passive': 0,
+            'remove-private-as': 0,
+            'send-community-val': 'both',
+            'inbound': 0,
+            'shutdown': 0,
+            'strict-capability-match': 0,
+            'timers-keepalive': 30,
+            'timers-holdtime': 90,
+            'weight': 0,
+        }
+        if name is not None:
+            rv['peer-group'] = name
+        if remote_as is not None:
+            rv['peer-group-remote-as'] = remote_as
+        if bfd is not None:
+            rv['bfd'] = 1 if bfd is True else 0
+        if send_community is not None:
+            if send_community not in ["both", "none", "standard", "extended"]:
+                raise ValueError(
+                    f"send_community val {send_community} not in accepted values: both, none, standard, extended"
+                )
+            rv['send-community-val'] = send_community
+        if activate is not None:
+            rv['activate'] = 1 if activate is True else 0
+        if shutdown is not None:
+            rv['shutdown'] = 1 if shutdown is True else 0
+        if multihop is not None:
+            rv['ebgp-multihop'] = 1 if multihop is True else 0
+        if route_refresh is not None:
+            rv['route-refresh'] = 1 if route_refresh is True else 0
+        if next_hop_self is not None:
+            rv['next-hop-self'] = 1 if next_hop_self is True else 0
+        if rm_in is not None or rm_out is not None:
+            rv['neighbor-route-map-lists'] = create_route_map_structure(rm_in=rm_in, rm_out=rm_out)
+        # return rv
+        return {
+            "peer-group-neighbor": rv
+        }
+
+
+class NeighborIpv6(BgpBase):
+
+    def __init__(self, client):
+        super(NeighborIpv6, self).__init__(client=client)
+        self.url_suffix = f"address-family/ipv6/neighbor/ipv6-neighbor/"
+
+    def create(
+        self,
+        ipv6: str, asn: int,
+        send_community: Optional[str] = None,
+        next_hop_self: Optional[bool] = None,
+        activate: Optional[bool] = None,
+        rm_in: Optional[str] = None, rm_out: Optional[bool] = None,
+        peer_group_name: Optional[str] = None,
+    ) -> Dict:
+        payload = self._build_payload(
+            ipv6=ipv6, send_community=send_community,
+            next_hop_self=next_hop_self, activate=activate,
+            rm_out=rm_out, rm_in=rm_in, peer_group_name=peer_group_name
+        )
+        _url = f"{self.url_prefix}{asn}/{self.url_suffix}"
+        print(f"URL NeighborIpv6 Create: {_url}")
+        return self._post(_url, payload)
+
+    def update(
+        self,
+        ipv6: str, asn: int,
+        send_community: Optional[str] = None,
+        next_hop_self: Optional[bool] = None,
+        activate: Optional[bool] = None,
+        rm_in: Optional[str] = None, rm_out: Optional[bool] = None,
+        peer_group_name: Optional[str] = None,
+    ) -> Dict:
+        payload = self._build_payload(
+            ipv6=ipv6, send_community=send_community,
+            next_hop_self=next_hop_self, activate=activate,
+            rm_out=rm_out, rm_in=rm_in, peer_group_name=peer_group_name
+        )
+        _url = f"{self.url_prefix}{asn}/{self.url_suffix}"
+        print(f"URL NeighborIpv6 Update: {_url}")
+        return self._post(f"{_url}{ipv6}", payload)
+
+    @staticmethod
+    def _build_payload(
+        ipv6: str,
+        send_community: Optional[str] = None,
+        next_hop_self: Optional[bool] = None,
+        activate: Optional[bool] = None,
+        rm_in: Optional[str] = None, rm_out: Optional[bool] = None,
+        peer_group_name: Optional[str] = None,
+    ) -> Dict:
+        rv = dict()
+        rv['neighbor-ipv6'] = ipv6
+        if send_community is not None:
+            if send_community not in ["both", "none", "standard", "extended"]:
+                raise ValueError(
+                    f"send_community val {send_community} not in accepted values: both, none, standard, extended"
+                )
+            rv['send-community-val'] = send_community
+        if next_hop_self is not None:
+            rv['next-hop-self'] = 1 if next_hop_self is True else 0
+        if activate is not None:
+            rv['activate'] = 1 if activate is True else 0
+        if rm_in is not None or rm_out is not None:
+            rv['neighbor-route-map-lists'] = create_route_map_structure(rm_in=rm_in, rm_out=rm_out)
+        if peer_group_name is not None:
+            rv['peer-group-name'] = peer_group_name
+        return {
+            "ipv6-neighbor": rv
+        }
+
+
+class PeerGroupIpv6(BgpBase):
+
+    def __init__(self, client):
+        super(PeerGroupIpv6, self).__init__(client)
+        self.url_suffix = f"address-family/ipv6/neighbor/peer-group-neighbor/"
+
+    def create(
+        self,
+        name: str, asn: int, activate: Optional[bool] = None,
+        send_community: Optional[str] = None,
+        next_hop_self: Optional[bool] = None,
+        max_prefix: Optional[int] = None
+    ) -> Dict:
+        payload = self._build_payload(
+            name=name, activate=activate,
+            send_community=send_community, next_hop_self=next_hop_self,
+            max_prefix=max_prefix
+        )
+        _url = f"{self.url_prefix}{asn}/{self.url_suffix}"
+        print(f"URL PeerGroupIpv6 Create: {_url}")
+        return self._post(_url, payload)
+
+    def update(
+        self,
+        name: str, activate: Optional[bool] = None,
+        send_community: Optional[str] = None,
+        next_hop_self: Optional[bool] = None,
+        max_prefix: Optional[int] = None
+    ) -> Dict:
+        payload = self._build_payload(
+            name=name, activate=activate,
+            send_community=send_community, next_hop_self=next_hop_self,
+            max_prefix=max_prefix
+        )
+        _url = f"{self.url_prefix}{asn}/{self.url_suffix}"
+        print(f"URL PeerGroupIpv6 Update: {_url}")
+        return self._post(f"{_url}{name}", payload)
+
+    @staticmethod
+    def _build_payload(
+        name: str, activate: Optional[bool] = None,
+        send_community: Optional[str] = None,
+        next_hop_self: Optional[bool] = None,
+        max_prefix: Optional[int] = None
+    ) -> Dict:
+        rv = {'allowas-in': 0, 'default-originate': 0, 'inbound': 0, 'maximum-prefix': 128, 'next-hop-self': 0,
+              'peer-group': name, 'remove-private-as': 0, 'send-community-val': 'both'}
+        if activate is not None:
+            rv['activate'] = 1 if activate is True else 0
+        if send_community is not None:
+            if send_community not in ["both", "none", "standard", "extended"]:
+                raise ValueError(
+                    f"send_community val {send_community} not in accepted values: both, none, standard, extended"
+                )
+            rv['send-community-val'] = send_communit
+        if next_hop_self is not None:
+            rv['next-hop-self'] = 1 if next_hop_self is True else 0
+        if max_prefix is not None:
+            rv['maximum-prefix'] = max_prefix
+        return {
+            "peer-group-neighbor": rv
+        }
+
+
+class Neighbor(BgpBase):
+
+    def __init__(self, client):
+        super(Neighbor, self).__init__(client=client)
+        self.url_suffix = "neighbor/"
+
+    @property
+    def ipv4_neighbor(self):
+        return NeighborIPv4(self.client)
+
+    @property
+    def peer_group(self):
+        return PeerGroupIPv4Neighbor(self.client)
+
+
+class AddressFamilyIPv6(BgpBase):
+    def __init__(self, client):
+        super(AddressFamilyIPv6, self).__init__(client=client)
+        self.url_suffix = "address-family/"
+
+    @property
+    def ipv6_neighbor(self):
+        return NeighborIpv6(self.client)
+
+    @property
+    def peer_group(self):
+        return PeerGroupIpv6(self.client)
+
+
+class Bgp(BgpBase):
+
+    def __init__(self, client):
+        super(Bgp, self).__init__(client=client)
+
+    @property
+    def neighbor(self):
+        return Neighbor(self.client)
+
+    @property
+    def address_family(self):
+        return AddressFamilyIPv6(self.client)

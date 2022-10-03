@@ -17,6 +17,8 @@ from __future__ import unicode_literals
 from acos_client import errors as acos_errors
 from acos_client.v30 import base
 
+from typing import Optional, Dict, Tuple, List
+
 
 class Interface(base.BaseV30):
     iftype = "interface"
@@ -197,9 +199,150 @@ class VirtualEthernet(Interface):
         self.iftype = "ve"
         self.url_prefix = "{0}{1}/".format(self.url_prefix, self.iftype)
 
-    def _build_payload(self, **kwargs):
-        # we need to deal with VLAN stuff here
-        rv = super(VirtualEthernet, self)._build_payload(**kwargs)
-        rv[self.iftype] = rv.pop("interface")
+    def create(
+        self,
+        ifnum: int, name: Optional[str] = None,
+        enable: Optional[bool] = None,
+        ipv4_address: Optional[List[Tuple[str, str]]] = None,
+        dhcp: Optional[bool] = None,
+        ipv4_nat_inside: Optional[bool] = None,
+        ipv6_address: Optional[List[str]] = None,
+        ipv6_nat_inside: Optional[bool] = None,
+    ):
+        """
+        CREATE a VE interface with the provided values.
+        Don;t forget to create that interface form VLAN config, otherwise
+        will fail to create
+        :param ifnum: Interface number, according with VLAN ID [2-4094]
+        :param name: (Optional) Set the name of the interface
+        :param enable: (Optional) Enable interface
+        :param ipv4_address: (Optional) List of Tuples that stores IPv4 Address and IPv4 Netmask
+            of that interface. E.g ('192.168.255.1', '255.255.255.252')
+        :param dhcp: (Optional) Enable DHCP on the interface
+        :param ipv4_nat_inside: (Optional) Enable Inside NAT on IPv4
+        :param ipv6_address: (Optional) List of strs that stores IPv6 Addresses info in the
+            following format: 'FE81::1/64'
+        :param ipv6_nat_inside: (Optional) Enable Inside NAT on IPv6
+        """
+        payload = self.__build_payload(
+            ifnum=ifnum, name=name,
+            enable=enable,
+            ipv4_address=ipv4_address,
+            dhcp=dhcp,
+            ipv4_nat_inside=ipv4_nat_inside,
+            ipv6_address=ipv6_address,
+            ipv6_nat_inside=ipv6_nat_inside
+        )
+        return self._post(self.url_prefix, payload)
 
+    def update(
+        self,
+        ifnum: int, name: Optional[str] = None,
+        enable: Optional[bool] = None,
+        ipv4_address: Optional[List[Tuple[str, str]]] = None,
+        dhcp: Optional[bool] = None,
+        ipv4_nat_inside: Optional[bool] = None,
+        ipv6_address: Optional[List[str]] = None,
+        ipv6_nat_inside: Optional[bool] = None
+    ):
+        """
+        Update a VE interface with the provided values.
+        Don;t forget to create that interface form VLAN config, otherwise
+        will fail to create
+        :param ifnum: Interface number, according with VLAN ID [2-4094]
+        :param name: (Optional) Set the name of the interface
+        :param enable: (Optional) Enable interface
+        :param ipv4_address: (Optional) List of Tuples that stores IPv4 Address and IPv4 Netmask
+            of that interface. E.g ('192.168.255.1', '255.255.255.252')
+        :param dhcp: (Optional) Enable DHCP on the interface
+        :param ipv4_nat_inside: (Optional) Enable Inside NAT on IPv4
+        :param ipv6_address: (Optional) List of strs that stores IPv6 Addresses info in the
+            following format: 'FE81::1/64'
+        :param ipv6_nat_inside: (Optional) Enable Inside NAT on IPv6
+        """
+        payload = self.__build_payload(
+            ifnum=ifnum, name=name,
+            enable=enable,
+            ipv4_address=ipv4_address,
+            dhcp=dhcp,
+            ipv4_nat_inside=ipv4_nat_inside,
+            ipv6_address=ipv6_address,
+            ipv6_nat_inside=ipv6_nat_inside
+        )
+        return self._post(f"{self.url_prefix}{ifnum}", payload)
+
+    def __build_payload(
+        self,
+        ifnum: int, name: Optional[str] = None,
+        enable: Optional[bool] = None,
+        ipv4_address: Optional[List[Tuple[str, str]]] = None,
+        dhcp: Optional[bool] = None,
+        ipv4_nat_inside: Optional[bool] = None,
+        ipv6_address: Optional[List[str]] = None,
+        ipv6_nat_inside: Optional[bool] = None
+    ) -> Dict:
+        rv: Dict = {
+            self.iftype: {
+                "ifnum": ifnum
+            }
+        }
+        if enable is not None:
+            rv[self.iftype].update(
+                {
+                    "action": "enable" if enable is True else "disable"
+                }
+            )
+        if name is not None:
+            rv[self.iftype].update(
+                {
+                    "name": name
+                }
+            )
+        if ipv4_address is not None and dhcp is None:
+            rv[self.iftype].update(
+                {
+                    "ip": {
+                        "address-list": [
+                            {
+                                "ipv4-address": ip,
+                                "ipv4-netmask": netmask
+                            }
+                            for ip, netmask in ipv4_address
+                        ]
+                    }
+                }
+            )
+            if ipv4_nat_inside is not None:
+                rv[self.iftype]['ip'].update(
+                    {
+                        "inside": 1 if ipv4_nat_inside is True else 0
+                    }
+                )
+        elif ipv4_address is None and dhcp is not None:
+            rv[self.iftype].update(
+                {
+                    "ip": {
+                        "dhcp": 1 if dhcp is True else 0
+                    }
+                }
+            )
+        if ipv6_address is not None:
+            rv[self.iftype].update(
+                {
+                    "ipv6": {
+                        "address-list": [
+                            {
+                                "ipv6-addr": ipv6,
+                            }
+                            for ipv6 in ipv6_address
+                        ],
+                    }
+                }
+            )
+            if ipv6_nat_inside is not None:
+                rv[self.iftype]['ipv6'].update(
+                    {
+                        "inside": 1 if ipv4_nat_inside is True else 0
+                    }
+                )
         return rv
