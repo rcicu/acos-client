@@ -8,23 +8,23 @@ except ImportError:
     import mock
     import unittest2 as unittest
 
-from acos_client.v30.router.bgp_v2 import Bgp
+from acos_client.v30.router.bgp import Bgp
 
 class TestRouterBgp(unittest.TestCase):
 
     def setUp(self) -> None:
         self.client = mock.MagicMock()
-        self.bgp = Bgp(client=self.client, asn=65123)
+        self.bgp = Bgp(client=self.client)
         self.url_prefix = "/axapi/v3/router/bgp/"
         self.bgp_asn = 65123
 
     def test_bgp_get(self):
         self.bgp.get_list(asn=self.bgp_asn)
-        _url = f"{self.url_prefix}{self.bgp_asn}"
-        self.client.http.request.assert_called_with("GET", self.url_prefix, {}, mock.ANY, axapi_args=None,
+        _url = f"{self.url_prefix}{self.bgp_asn}/"
+        self.client.http.request.assert_called_with("GET", _url, {}, mock.ANY, axapi_args=None,
                                                     max_retries=None, timeout=mock.ANY)
         self.bgp.get(asn=self.bgp_asn)
-        self.client.http.request.assert_called_with("GET", f"{self.url_prefix}{self.bgp_asn}", {}, mock.ANY, axapi_args=None,
+        self.client.http.request.assert_called_with("GET", _url, {}, mock.ANY, axapi_args=None,
                                                     max_retries=None, timeout=mock.ANY)
 
     def test_neighbor_peer_group_get(self):
