@@ -1,7 +1,7 @@
 from ..base import BaseV30
 from .utils import create_route_map_structure
 
-from typing import Dict, Optional, Union
+from typing import Dict, Optional, Union, Any
 
 from pprint import pprint
 
@@ -39,7 +39,7 @@ class NeighborIPv4(BgpBase):
         ip: str, asn: int,
         bfd: Optional[bool] = None, description: Optional[str] = None,
         activate: Optional[bool] = None, multihop: Optional[bool] = None,
-        rm_in: Optional[str] = None, rm_out: Optional[bool] = None,
+        rm_in: Optional[str] = None, rm_out: Optional[str] = None,
         peer_group_name: Optional[str] = None, remote_as: Optional[int] = None,
         send_community: Optional[str] = None, shutdown: Optional[bool] = None
     ) -> Dict:
@@ -79,9 +79,9 @@ class NeighborIPv4(BgpBase):
         ip: str, asn: int,
         bfd: Optional[bool] = None, description: Optional[str] = None,
         activate: Optional[bool] = None, multihop: Optional[bool] = None,
-        rm_in: Optional[str] = None, rm_out: Optional[bool] = None,
+        rm_in: Optional[str] = None, rm_out: Optional[str] = None,
         peer_group_name: Optional[str] = None, remote_as: Optional[int] = None,
-        send_community: Optional[str] = None, shutdown: Optional[int] = None
+        send_community: Optional[str] = None, shutdown: Optional[bool] = None
     ) -> Dict:
         """
         Update IPv4 neighbor
@@ -119,7 +119,7 @@ class NeighborIPv4(BgpBase):
         ip: str,
         bfd: Optional[bool] = None, description: Optional[str] = None,
         activate: Optional[bool] = None, multihop: Optional[bool] = None,
-        rm_in: Optional[str] = None, rm_out: Optional[bool] = None,
+        rm_in: Optional[str] = None, rm_out: Optional[str] = None,
         peer_group_name: Optional[str] = None, remote_as: Optional[int] = None,
         send_community: Optional[str] = None, shutdown: Optional[bool] = None
     ) -> Dict:
@@ -165,7 +165,7 @@ class PeerGroupIPv4Neighbor(BgpBase):
         bfd: Optional[bool] = None, route_refresh: Optional[bool] = None,
         activate: Optional[bool] = None, multihop: Optional[bool] = None,
         shutdown: Optional[bool] = None, next_hop_self: Optional[bool] = None,
-        rm_in: Optional[str] = None, rm_out: Optional[bool] = None,
+        rm_in: Optional[str] = None, rm_out: Optional[str] = None,
         send_community: Optional[str] = None
     ) -> Dict:
         """
@@ -203,7 +203,7 @@ class PeerGroupIPv4Neighbor(BgpBase):
         bfd: Optional[bool] = None, route_refresh: Optional[bool] = None,
         activate: Optional[bool] = None, multihop: Optional[bool] = None,
         shutdown: Optional[bool] = None, next_hop_self: Optional[bool] = None,
-        rm_in: Optional[str] = None, rm_out: Optional[bool] = None,
+        rm_in: Optional[str] = None, rm_out: Optional[str] = None,
         send_community: Optional[str] = None
     ) -> Dict:
         """
@@ -240,7 +240,7 @@ class PeerGroupIPv4Neighbor(BgpBase):
         bfd: Optional[bool] = None, route_refresh: Optional[bool] = None,
         activate: Optional[bool] = None, multihop: Optional[bool] = None,
         shutdown: Optional[bool] = None, next_hop_self: Optional[bool] = None,
-        rm_in: Optional[str] = None, rm_out: Optional[bool] = None,
+        rm_in: Optional[str] = None, rm_out: Optional[str] = None,
         send_community: Optional[str] = None
     ) -> Dict:
         rv = {
@@ -312,7 +312,7 @@ class NeighborIpv6(BgpBase):
         send_community: Optional[str] = None,
         next_hop_self: Optional[bool] = None,
         activate: Optional[bool] = None,
-        rm_in: Optional[str] = None, rm_out: Optional[bool] = None,
+        rm_in: Optional[str] = None, rm_out: Optional[str] = None,
         peer_group_name: Optional[str] = None,
     ) -> Dict:
         """
@@ -346,7 +346,7 @@ class NeighborIpv6(BgpBase):
         send_community: Optional[str] = None,
         next_hop_self: Optional[bool] = None,
         activate: Optional[bool] = None,
-        rm_in: Optional[str] = None, rm_out: Optional[bool] = None,
+        rm_in: Optional[str] = None, rm_out: Optional[str] = None,
         peer_group_name: Optional[str] = None,
     ) -> Dict:
         """
@@ -380,7 +380,7 @@ class NeighborIpv6(BgpBase):
         send_community: Optional[str] = None,
         next_hop_self: Optional[bool] = None,
         activate: Optional[bool] = None,
-        rm_in: Optional[str] = None, rm_out: Optional[bool] = None,
+        rm_in: Optional[str] = None, rm_out: Optional[str] = None,
         peer_group_name: Optional[str] = None,
     ) -> Dict:
         rv = dict()
@@ -483,7 +483,7 @@ class PeerGroupIpv6(BgpBase):
                 raise ValueError(
                     f"send_community val {send_community} not in accepted values: both, none, standard, extended"
                 )
-            rv['send-community-val'] = send_communit
+            rv['send-community-val'] = send_community
         if next_hop_self is not None:
             rv['next-hop-self'] = 1 if next_hop_self is True else 0
         if max_prefix is not None:

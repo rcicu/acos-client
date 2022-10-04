@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 
-def create_route_map_structure(rm_in: Optional[str], rm_out: Optional[str]) -> List:
+def create_route_map_structure(rm_in: Optional[str] = None, rm_out: Optional[str] = None) -> List:
     """
     Helper function for creating the Route-Map structure that can be applied
     in multiple locations, like IPv4 Neighbour, Ipv6 Neighbour, etc
