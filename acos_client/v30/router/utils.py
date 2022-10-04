@@ -11,17 +11,7 @@ def create_route_map_structure(rm_in: Optional[str], rm_out: Optional[str]) -> L
     """
     rm_list = list()
     if rm_out is not None:
-        rm_list.append(
-            {
-                "nbr-rmap-direction": "out",
-                "nbr-route-map": rm_out
-            }
-        )
+        rm_list.append({"nbr-rmap-direction": "out", "nbr-route-map": rm_out})
     if rm_in is not None:
-        rm_list.append(
-            {
-                "nbr-rmap-direction": "in",
-                "nbr-route-map": rm_in
-            }
-        )
+        rm_list.append({"nbr-rmap-direction": "in", "nbr-route-map": rm_in})
     return rm_list

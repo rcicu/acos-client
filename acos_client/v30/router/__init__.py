@@ -3,7 +3,6 @@ from acos_client.v30.router.bgp import Bgp
 
 
 class Router(BaseV30):
-
     def __str__(self):
         return f"Router: {vars(self)}"
 
@@ -32,4 +31,4 @@ class Router(BaseV30):
         pass
 
     def all(self):
-        return self._get('/router/')
+        return self._get("/router/")

@@ -41,11 +41,10 @@ class NeighborIPv4(BgpBase):
         activate: Optional[bool] = None, multihop: Optional[bool] = None,
         rm_in: Optional[str] = None, rm_out: Optional[bool] = None,
         peer_group_name: Optional[str] = None, remote_as: Optional[int] = None,
-        send_community: Optional[str] = None
+        send_community: Optional[str] = None, shutdown: Optional[bool] = None
     ) -> Dict:
         """
-        Create IPv4 neighbor
-
+        Create IPv4 BGP neighbor
         :param ip: Neighbor IP Address
         :param asn: Local BGP ASN
         :param bfd: Enable BFP
@@ -59,6 +58,7 @@ class NeighborIPv4(BgpBase):
         :param send_community: Secify where to send commnunity
             Allowed values: "both", "none", "standard", "extended"
         :param remote_as: Specify neighbor remote AS number
+        :param shutdown: Shutdown BGP neighbour
         :return Dict:
         """
         payload = self._build_payload(
@@ -67,7 +67,8 @@ class NeighborIPv4(BgpBase):
             rm_in=rm_in, rm_out=rm_out,
             peer_group_name=peer_group_name,
             send_community=send_community,
-            remote_as=remote_as
+            remote_as=remote_as,
+            shutdown=shutdown
         )
         _url = f"{self.url_prefix}{asn}/{self.url_suffix}"
         print(f"URL NeighborIPv4 Create: {_url}")
@@ -80,11 +81,10 @@ class NeighborIPv4(BgpBase):
         activate: Optional[bool] = None, multihop: Optional[bool] = None,
         rm_in: Optional[str] = None, rm_out: Optional[bool] = None,
         peer_group_name: Optional[str] = None, remote_as: Optional[int] = None,
-        send_community: Optional[str] = None
+        send_community: Optional[str] = None, shutdown: Optional[int] = None
     ) -> Dict:
         """
         Update IPv4 neighbor
-
         :param ip: Neighbor IP Address
         :param asn: Local BGP ASN
         :param bfd: Enable BFP
@@ -98,6 +98,7 @@ class NeighborIPv4(BgpBase):
             group
         :param send_community: Secify where to send commnunity
             Allowed values: "both", "none", "standard", "extended"
+        :param shutdown: Shutdown BGP neighbour
         :return Dict:
         """
         payload = self._build_payload(
@@ -106,7 +107,8 @@ class NeighborIPv4(BgpBase):
             rm_in=rm_in, rm_out=rm_out,
             peer_group_name=peer_group_name,
             remote_as=remote_as,
-            send_community=send_community
+            send_community=send_community,
+            shutdown=shutdown
         )
         _url = f"{self.url_prefix}{asn}/{self.url_suffix}"
         pprint(f"Url NeighborIPv4 Update: {_url}")
@@ -119,7 +121,7 @@ class NeighborIPv4(BgpBase):
         activate: Optional[bool] = None, multihop: Optional[bool] = None,
         rm_in: Optional[str] = None, rm_out: Optional[bool] = None,
         peer_group_name: Optional[str] = None, remote_as: Optional[int] = None,
-        send_community: Optional[str] = None
+        send_community: Optional[str] = None, shutdown: Optional[bool] = None
     ) -> Dict:
         rv = dict()
         rv['neighbor-ipv4'] = ip
@@ -131,6 +133,8 @@ class NeighborIPv4(BgpBase):
             rv['activate'] = 1 if activate is True else 0
         if peer_group_name is not None:
             rv['peer-group-name'] = peer_group_name
+        if shutdown is not None:
+            rv['shutdown'] = 1 if shutdown is True else 0
         if multihop is not None:
             rv['ebgp-multihop'] = 1 if multihop is True else 0
         if remote_as in not None:
