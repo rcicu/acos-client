@@ -137,7 +137,7 @@ class NeighborIPv4(BgpBase):
             rv['shutdown'] = 1 if shutdown is True else 0
         if multihop is not None:
             rv['ebgp-multihop'] = 1 if multihop is True else 0
-        if remote_as in not None:
+        if remote_as is not None:
             rv['nbr-remote-as'] = remote_as
         if send_community is not None:
             if send_community not in ["both", "none", "standard", "extended"]:
