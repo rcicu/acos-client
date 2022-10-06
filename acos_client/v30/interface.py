@@ -201,17 +201,17 @@ class VirtualEthernet(Interface):
 
     def create(
         self,
-        ifnum: int, name: Optional[str] = None,
-        enable: Optional[bool] = None,
-        ipv4_address: Optional[List[Tuple[str, str]]] = None,
-        dhcp: Optional[bool] = None,
-        ipv4_nat_inside: Optional[bool] = None,
-        ipv6_address: Optional[List[str]] = None,
-        ipv6_nat_inside: Optional[bool] = None,
+        ifnum, name=None,
+        enable=None,
+        ipv4_address=None,
+        dhcp=None,
+        ipv4_nat_inside=None,
+        ipv6_address=None,
+        ipv6_nat_inside=None,
     ):
         """
         CREATE a VE interface with the provided values.
-        Don;t forget to create that interface form VLAN config, otherwise
+        Don't forget to create that interface form VLAN config, otherwise
         will fail to create
         :param ifnum: Interface number, according with VLAN ID [2-4094]
         :param name: (Optional) Set the name of the interface
@@ -224,7 +224,7 @@ class VirtualEthernet(Interface):
             following format: 'FE81::1/64'
         :param ipv6_nat_inside: (Optional) Enable Inside NAT on IPv6
         """
-        payload = self.__build_payload(
+        payload = self._build_payload(
             ifnum=ifnum, name=name,
             enable=enable,
             ipv4_address=ipv4_address,
@@ -237,13 +237,13 @@ class VirtualEthernet(Interface):
 
     def update(
         self,
-        ifnum: int, name: Optional[str] = None,
-        enable: Optional[bool] = None,
-        ipv4_address: Optional[List[Tuple[str, str]]] = None,
-        dhcp: Optional[bool] = None,
-        ipv4_nat_inside: Optional[bool] = None,
-        ipv6_address: Optional[List[str]] = None,
-        ipv6_nat_inside: Optional[bool] = None
+        ifnum, name=None,
+        enable=None,
+        ipv4_address=None,
+        dhcp=None,
+        ipv4_nat_inside=None,
+        ipv6_address=None,
+        ipv6_nat_inside=None
     ):
         """
         Update a VE interface with the provided values.
@@ -260,7 +260,7 @@ class VirtualEthernet(Interface):
             following format: 'FE81::1/64'
         :param ipv6_nat_inside: (Optional) Enable Inside NAT on IPv6
         """
-        payload = self.__build_payload(
+        payload = self._build_payload(
             ifnum=ifnum, name=name,
             enable=enable,
             ipv4_address=ipv4_address,
@@ -271,17 +271,17 @@ class VirtualEthernet(Interface):
         )
         return self._post(f"{self.url_prefix}{ifnum}", payload)
 
-    def __build_payload(
+    def _build_payload(
         self,
-        ifnum: int, name: Optional[str] = None,
-        enable: Optional[bool] = None,
-        ipv4_address: Optional[List[Tuple[str, str]]] = None,
-        dhcp: Optional[bool] = None,
-        ipv4_nat_inside: Optional[bool] = None,
-        ipv6_address: Optional[List[str]] = None,
-        ipv6_nat_inside: Optional[bool] = None
-    ) -> Dict:
-        rv: Dict = {
+        ifnum, name=None,
+        enable=None,
+        ipv4_address=None,
+        dhcp=None,
+        ipv4_nat_inside=None,
+        ipv6_address=None,
+        ipv6_nat_inside=None
+    ):
+        rv = {
             self.iftype: {
                 "ifnum": ifnum
             }
