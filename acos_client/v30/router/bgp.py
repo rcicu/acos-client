@@ -1,8 +1,6 @@
 from ..base import BaseV30
 from .utils import create_route_map_structure
 
-from typing import Dict, Optional, Union, Any
-
 from pprint import pprint
 
 
@@ -13,19 +11,21 @@ class BgpBase(BaseV30):
         self.url_prefix = f"/router/bgp/"
         self.url_suffix = ""
 
-    def get_list(self, asn: int) -> Dict:
-        _url = f"{self.url_prefix}{asn}/{self.url_suffix}"
+    def get_list(self, asn):
+        _url = self._build_url(prefix=self.url_prefix, middle=asn, suffix=self.url_suffix)
         print(f"GET List URL: {_url}")
         return self._get(_url)
 
-    def get(self, asn: int, key: Optional[Union[str, int]] = None) -> Dict:
+    def get(self, asn, key=None):
         key = key if key is not None else ""
-        _url = f"{self.url_prefix}{asn}/{self.url_suffix}{key}"
+        _url = self._build_url(prefix=self.url_prefix, middle=asn, suffix=self.url_suffix)
+        _url = f"{_url}{key}"
         print(f"GET URL: {_url}")
         return self._get(_url)
 
-    def delete(self, asn: int, key: Union[str, int]) -> Dict:
-        _url = f"{self.url_prefix}{asn}{self.url_suffix}{key}"
+    def delete(self, asn, key):
+        _url = self._build_url(prefix=self.url_prefix, middle=asn, suffix=self.url_suffix)
+        _url = f"{_url}{key}"
         print(f"DELETE URL: {_url}")
         return self._delete(_url)
 
@@ -38,13 +38,13 @@ class NeighborIPv4(BgpBase):
 
     def create(
         self,
-        ip: str, asn: int,
-        bfd: Optional[bool] = None, description: Optional[str] = None,
-        activate: Optional[bool] = None, multihop: Optional[bool] = None,
-        rm_in: Optional[str] = None, rm_out: Optional[str] = None,
-        peer_group_name: Optional[str] = None, remote_as: Optional[int] = None,
-        send_community: Optional[str] = None, shutdown: Optional[bool] = None
-    ) -> Dict:
+        ip, asn,
+        bfd=None, description=None,
+        activate=None, multihop=None,
+        rm_in=None, rm_out=None,
+        peer_group_name=None, remote_as=None,
+        send_community=None, shutdown=None
+    ):
         """
         Create IPv4 BGP neighbor
         :param ip: Neighbor IP Address
@@ -72,19 +72,19 @@ class NeighborIPv4(BgpBase):
             remote_as=remote_as,
             shutdown=shutdown
         )
-        _url = f"{self.url_prefix}{asn}/{self.url_suffix}"
+        _url = self._build_url(prefix=self.url_prefix, middle=asn, suffix=self.url_suffix)
         print(f"URL NeighborIPv4 Create: {_url}")
         return self._post(_url, payload)
 
     def update(
         self,
-        ip: str, asn: int,
-        bfd: Optional[bool] = None, description: Optional[str] = None,
-        activate: Optional[bool] = None, multihop: Optional[bool] = None,
-        rm_in: Optional[str] = None, rm_out: Optional[str] = None,
-        peer_group_name: Optional[str] = None, remote_as: Optional[int] = None,
-        send_community: Optional[str] = None, shutdown: Optional[bool] = None
-    ) -> Dict:
+        ip, asn,
+        bfd=None, description=None,
+        activate=None, multihop=None,
+        rm_in=None, rm_out=None,
+        peer_group_name=None, remote_as=None,
+        send_community=None, shutdown=None
+    ):
         """
         Update IPv4 neighbor
         :param ip: Neighbor IP Address
@@ -112,19 +112,19 @@ class NeighborIPv4(BgpBase):
             send_community=send_community,
             shutdown=shutdown
         )
-        _url = f"{self.url_prefix}{asn}/{self.url_suffix}"
+        _url = self._build_url(prefix=self.url_prefix, middle=asn, suffix=self.url_suffix)
         pprint(f"Url NeighborIPv4 Update: {_url}")
         return self._post(f"{_url}{ip}", payload)
 
     @staticmethod
     def _build_payload(
-        ip: str,
-        bfd: Optional[bool] = None, description: Optional[str] = None,
-        activate: Optional[bool] = None, multihop: Optional[bool] = None,
-        rm_in: Optional[str] = None, rm_out: Optional[str] = None,
-        peer_group_name: Optional[str] = None, remote_as: Optional[int] = None,
-        send_community: Optional[str] = None, shutdown: Optional[bool] = None
-    ) -> Dict:
+        ip,
+        bfd=None, description=None,
+        activate=None, multihop=None,
+        rm_in=None, rm_out=None,
+        peer_group_name=None, remote_as=None,
+        send_community=None, shutdown=None
+    ):
         rv = dict()
         rv['neighbor-ipv4'] = ip
         if bfd is not None:
@@ -162,14 +162,14 @@ class PeerGroupIPv4Neighbor(BgpBase):
 
     def create(
         self,
-        asn: int,
-        name: Optional[str] = None, remote_as: Optional[int] = None,
-        bfd: Optional[bool] = None, route_refresh: Optional[bool] = None,
-        activate: Optional[bool] = None, multihop: Optional[bool] = None,
-        shutdown: Optional[bool] = None, next_hop_self: Optional[bool] = None,
-        rm_in: Optional[str] = None, rm_out: Optional[str] = None,
-        send_community: Optional[str] = None
-    ) -> Dict:
+        asn,
+        name=None, remote_as=None,
+        bfd=None, route_refresh=None,
+        activate=None, multihop=None,
+        shutdown=None, next_hop_self=None,
+        rm_in=None, rm_out=None,
+        send_community=None
+    ):
         """
         Create IPv4 neighbor peer-group
 
@@ -194,20 +194,20 @@ class PeerGroupIPv4Neighbor(BgpBase):
             shutdown=shutdown, next_hop_self=next_hop_self,
             rm_in=rm_in, rm_out=rm_out, send_community=send_community
         )
-        _url = f"{self.url_prefix}{asn}/{self.url_suffix}"
+        _url = self._build_url(prefix=self.url_prefix, middle=asn, suffix=self.url_suffix)
         print(f"URL PeerGroupIPv4Neighbor Create: {_url}")
         return self._post(_url, payload)
 
     def update(
         self,
-        asn: int,
-        name: Optional[str] = None, remote_as: Optional[int] = None,
-        bfd: Optional[bool] = None, route_refresh: Optional[bool] = None,
-        activate: Optional[bool] = None, multihop: Optional[bool] = None,
-        shutdown: Optional[bool] = None, next_hop_self: Optional[bool] = None,
-        rm_in: Optional[str] = None, rm_out: Optional[str] = None,
-        send_community: Optional[str] = None
-    ) -> Dict:
+        asn,
+        name=None, remote_as=None,
+        bfd=None, route_refresh=None,
+        activate=None, multihop=None,
+        shutdown=None, next_hop_self=None,
+        rm_in=None, rm_out=None,
+        send_community=None
+    ):
         """
         Update IPv4 neighbor peer-group
 
@@ -232,19 +232,19 @@ class PeerGroupIPv4Neighbor(BgpBase):
             shutdown=shutdown, next_hop_self=next_hop_self,
             rm_in=rm_in, rm_out=rm_out, send_community=send_community
         )
-        _url = f"{self.url_prefix}{asn}/{self.url_suffix}"
+        _url = self._build_url(prefix=self.url_prefix, middle=asn, suffix=self.url_suffix)
         print(f"URL PeerGroupIPv4Neighbor Update: {_url}")
         return self._post(f"{_url}{name}", payload)
 
     @staticmethod
     def _build_payload(
-        name: Optional[str] = None, remote_as: Optional[int] = None,
-        bfd: Optional[bool] = None, route_refresh: Optional[bool] = None,
-        activate: Optional[bool] = None, multihop: Optional[bool] = None,
-        shutdown: Optional[bool] = None, next_hop_self: Optional[bool] = None,
-        rm_in: Optional[str] = None, rm_out: Optional[str] = None,
-        send_community: Optional[str] = None
-    ) -> Dict:
+        name=None, remote_as=None,
+        bfd=None, route_refresh=None,
+        activate=None, multihop=None,
+        shutdown=None, next_hop_self=None,
+        rm_in=None, rm_out=None,
+        send_community=None
+    ):
         rv = {
             'peer-group-key': 1,
             'activate': 1,
@@ -310,13 +310,13 @@ class NeighborIpv6(BgpBase):
 
     def create(
         self,
-        ipv6: str, asn: int,
-        send_community: Optional[str] = None,
-        next_hop_self: Optional[bool] = None,
-        activate: Optional[bool] = None,
-        rm_in: Optional[str] = None, rm_out: Optional[str] = None,
-        peer_group_name: Optional[str] = None,
-    ) -> Dict:
+        ipv6, asn,
+        send_community=None,
+        next_hop_self=None,
+        activate=None,
+        rm_in=None, rm_out=None,
+        peer_group_name=None,
+    ):
         """
         Create IPv6 neighbor
 
@@ -338,19 +338,19 @@ class NeighborIpv6(BgpBase):
             next_hop_self=next_hop_self, activate=activate,
             rm_out=rm_out, rm_in=rm_in, peer_group_name=peer_group_name
         )
-        _url = f"{self.url_prefix}{asn}/{self.url_suffix}"
+        _url = self._build_url(prefix=self.url_prefix, middle=asn, suffix=self.url_suffix)
         print(f"URL NeighborIpv6 Create: {_url}")
         return self._post(_url, payload)
 
     def update(
         self,
-        ipv6: str, asn: int,
-        send_community: Optional[str] = None,
-        next_hop_self: Optional[bool] = None,
-        activate: Optional[bool] = None,
-        rm_in: Optional[str] = None, rm_out: Optional[str] = None,
-        peer_group_name: Optional[str] = None,
-    ) -> Dict:
+        ipv6, asn,
+        send_community=None,
+        next_hop_self=None,
+        activate=None,
+        rm_in=None, rm_out=None,
+        peer_group_name=None,
+    ):
         """
         Update IPv6 neighbor
 
@@ -372,19 +372,19 @@ class NeighborIpv6(BgpBase):
             next_hop_self=next_hop_self, activate=activate,
             rm_out=rm_out, rm_in=rm_in, peer_group_name=peer_group_name
         )
-        _url = f"{self.url_prefix}{asn}/{self.url_suffix}"
+        _url = self._build_url(prefix=self.url_prefix, middle=asn, suffix=self.url_suffix)
         print(f"URL NeighborIpv6 Update: {_url}{ipv6}")
         return self._post(f"{_url}{ipv6}", payload)
 
     @staticmethod
     def _build_payload(
-        ipv6: str,
-        send_community: Optional[str] = None,
-        next_hop_self: Optional[bool] = None,
-        activate: Optional[bool] = None,
-        rm_in: Optional[str] = None, rm_out: Optional[str] = None,
-        peer_group_name: Optional[str] = None,
-    ) -> Dict:
+        ipv6,
+        send_community=None,
+        next_hop_self=None,
+        activate=None,
+        rm_in=None, rm_out=None,
+        peer_group_name=None,
+    ):
         rv = dict()
         rv['neighbor-ipv6'] = ipv6
         if send_community is not None:
@@ -414,11 +414,11 @@ class PeerGroupIpv6(BgpBase):
 
     def create(
         self,
-        name: str, asn: int, activate: Optional[bool] = None,
-        send_community: Optional[str] = None,
-        next_hop_self: Optional[bool] = None,
-        max_prefix: Optional[int] = None
-    ) -> Dict:
+        name, asn, activate=None,
+        send_community=None,
+        next_hop_self=None,
+        max_prefix=None
+    ):
         """
         For IPv6, in order to use a peergroup that you created before,
         you need to activate first that peer-group into IPv6 AF container
@@ -437,17 +437,17 @@ class PeerGroupIpv6(BgpBase):
             send_community=send_community, next_hop_self=next_hop_self,
             max_prefix=max_prefix
         )
-        _url = f"{self.url_prefix}{asn}/{self.url_suffix}"
+        _url = self._build_url(prefix=self.url_prefix, middle=asn, suffix=self.url_suffix)
         print(f"URL PeerGroupIpv6 Create: {_url}")
         return self._post(_url, payload)
 
     def update(
         self,
-        name: str, asn: int, activate: Optional[bool] = None,
-        send_community: Optional[str] = None,
-        next_hop_self: Optional[bool] = None,
-        max_prefix: Optional[int] = None
-    ) -> Dict:
+        name, asn, activate=None,
+        send_community=None,
+        next_hop_self=None,
+        max_prefix=None
+    ):
         """
         Update IPv6 peer-group values
 
@@ -465,17 +465,17 @@ class PeerGroupIpv6(BgpBase):
             send_community=send_community, next_hop_self=next_hop_self,
             max_prefix=max_prefix
         )
-        _url = f"{self.url_prefix}{asn}/{self.url_suffix}"
+        _url = self._build_url(prefix=self.url_prefix, middle=asn, suffix=self.url_suffix)
         print(f"URL PeerGroupIpv6 Update: {_url}")
         return self._post(f"{_url}{name}", payload)
 
     @staticmethod
     def _build_payload(
-        name: str, activate: Optional[bool] = None,
-        send_community: Optional[str] = None,
-        next_hop_self: Optional[bool] = None,
-        max_prefix: Optional[int] = None
-    ) -> Dict:
+        name, activate=None,
+        send_community=None,
+        next_hop_self=None,
+        max_prefix=None
+    ):
         rv = {'allowas-in': 0, 'default-originate': 0, 'inbound': 0, 'maximum-prefix': 128, 'next-hop-self': 0,
               'peer-group': name, 'remove-private-as': 0, 'send-community-val': 'both'}
         if activate is not None:
