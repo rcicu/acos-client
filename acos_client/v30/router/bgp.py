@@ -154,6 +154,130 @@ class NeighborIPv4(BgpBase):
         }
 
 
+class NeighborIPv6(BgpBase):
+
+    def __init__(self, client):
+        super(NeighborIPv6, self).__init__(client=client)
+        self.url_suffix = "neighbor/ipv6-neighbor/"
+
+    def create(
+        self,
+        ip, asn,
+        bfd=None, description=None,
+        activate=None, multihop=None,
+        rm_in=None, rm_out=None,
+        peer_group_name=None, remote_as=None,
+        send_community=None, shutdown=None
+    ):
+        """
+        Create IPv4 BGP neighbor
+        :param ip: Neighbor IP Address
+        :param asn: Local BGP ASN
+        :param bfd: Enable BFP
+        :param description: Description for the neighbor
+        :param activate: Activate/DeActivate neighbor
+        :param multihop: Enable BGP multi-hp
+        :param rm_in: Specify inbound RouteMap
+        :param rm_out: Specify outbound RouteMap
+        :param peer_group_name: Assign the neighbor to a peer
+            group
+        :param send_community: Secify where to send commnunity
+            Allowed values: "both", "none", "standard", "extended"
+        :param remote_as: Specify neighbor remote AS number
+        :param shutdown: Shutdown BGP neighbour
+        :return Dict:
+        """
+        payload = self._build_payload(
+            ip=ip, bfd=bfd, description=description,
+            activate=activate, multihop=multihop,
+            rm_in=rm_in, rm_out=rm_out,
+            peer_group_name=peer_group_name,
+            send_community=send_community,
+            remote_as=remote_as,
+            shutdown=shutdown
+        )
+        _url = self._build_url(prefix=self.url_prefix, middle=asn, suffix=self.url_suffix)
+        print(f"URL NeighborIPv4 Create: {_url}")
+        return self._post(_url, payload)
+
+    def update(
+        self,
+        ip, asn,
+        bfd=None, description=None,
+        activate=None, multihop=None,
+        rm_in=None, rm_out=None,
+        peer_group_name=None, remote_as=None,
+        send_community=None, shutdown=None
+    ):
+        """
+        Update IPv4 neighbor
+        :param ip: Neighbor IP Address
+        :param asn: Local BGP ASN
+        :param bfd: Enable BFP
+        :param description: Description for the neighbor
+        :param activate: Activate/DeActivate neighbor
+        :param multihop: Enable BGP multi-hp
+        :param rm_in: Specify inbound RouteMap
+        :param rm_out: Specify outbound RouteMap
+        :param remote_as: Specify neighbor remote AS number
+        :param peer_group_name: Assign the neighbor to a peer
+            group
+        :param send_community: Secify where to send commnunity
+            Allowed values: "both", "none", "standard", "extended"
+        :param shutdown: Shutdown BGP neighbour
+        :return Dict:
+        """
+        payload = self._build_payload(
+            ip=ip, bfd=bfd, description=description,
+            activate=activate, multihop=multihop,
+            rm_in=rm_in, rm_out=rm_out,
+            peer_group_name=peer_group_name,
+            remote_as=remote_as,
+            send_community=send_community,
+            shutdown=shutdown
+        )
+        _url = self._build_url(prefix=self.url_prefix, middle=asn, suffix=self.url_suffix)
+        pprint(f"Url NeighborIPv4 Update: {_url}")
+        return self._post(f"{_url}{ip}", payload)
+
+    @staticmethod
+    def _build_payload(
+        ip,
+        bfd=None, description=None,
+        activate=None, multihop=None,
+        rm_in=None, rm_out=None,
+        peer_group_name=None, remote_as=None,
+        send_community=None, shutdown=None
+    ):
+        rv = dict()
+        rv['neighbor-ipv6'] = ip
+        if bfd is not None:
+            rv['bfd'] = 1 if bfd is True else 0
+        if description is not None:
+            rv['description'] = description
+        if activate is not None:
+            rv['activate'] = 1 if activate is True else 0
+        if peer_group_name is not None:
+            rv['peer-group-name'] = peer_group_name
+        if shutdown is not None:
+            rv['shutdown'] = 1 if shutdown is True else 0
+        if multihop is not None:
+            rv['ebgp-multihop'] = 1 if multihop is True else 0
+        if remote_as is not None:
+            rv['nbr-remote-as'] = remote_as
+        if send_community is not None:
+            if send_community not in ["both", "none", "standard", "extended"]:
+                raise ValueError(
+                    f"send_community val {send_community} not in accepted values: both, none, standard, extended"
+                )
+            rv['send-community-val'] = send_community
+        if rm_in is not None or rm_out is not None:
+            rv['neighbor-route-map-lists'] = create_route_map_structure(rm_in=rm_in, rm_out=rm_out)
+        return {
+            "ipv6-neighbor": rv
+        }
+
+
 class PeerGroupIPv4Neighbor(BgpBase):
 
     def __init__(self, client):
@@ -504,6 +628,10 @@ class Neighbor(BgpBase):
     @property
     def ipv4_neighbor(self):
         return NeighborIPv4(self.client)
+
+    @property
+    def ipv6_neighbor(self):
+        return NeighborIPv6(self.client)
 
     @property
     def peer_group(self):
