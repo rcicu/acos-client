@@ -14,18 +14,20 @@ class BgpBase(BaseV30):
         self.url_suffix = ""
 
     def get_list(self, asn: int) -> Dict:
-        print(f"GET List URL: {self.url_prefix}{asn}/{self.url_suffix}")
-        return self._get(f"{self.url_prefix}{asn}/{self.url_suffix}")
+        _url = f"{self.url_prefix}{asn}/{self.url_suffix}"
+        print(f"GET List URL: {_url}")
+        return self._get(_url)
 
     def get(self, asn: int, key: Optional[Union[str, int]] = None) -> Dict:
-        print(f"GET URL: {self.url_prefix}{asn}/{self.url_suffix}{key}")
-        if key is not None:
-            return self._get(f"{self.url_prefix}{asn}/{self.url_suffix}{key}")
-        else:
-            return self._get(f"{self.url_prefix}{asn}/{self.url_suffix}")
+        key = key if key is not None else ""
+        _url = f"{self.url_prefix}{asn}/{self.url_suffix}{key}"
+        print(f"GET URL: {_url}")
+        return self._get(_url)
 
     def delete(self, asn: int, key: Union[str, int]) -> Dict:
-        return self._delete(f"{self.url_prefix}{asn}{self.url_suffix}{key}")
+        _url = f"{self.url_prefix}{asn}{self.url_suffix}{key}"
+        print(f"DELETE URL: {_url}")
+        return self._delete(_url)
 
 
 class NeighborIPv4(BgpBase):
@@ -371,7 +373,7 @@ class NeighborIpv6(BgpBase):
             rm_out=rm_out, rm_in=rm_in, peer_group_name=peer_group_name
         )
         _url = f"{self.url_prefix}{asn}/{self.url_suffix}"
-        print(f"URL NeighborIpv6 Update: {_url}")
+        print(f"URL NeighborIpv6 Update: {_url}{ipv6}")
         return self._post(f"{_url}{ipv6}", payload)
 
     @staticmethod

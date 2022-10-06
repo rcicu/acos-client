@@ -17,7 +17,7 @@ from __future__ import unicode_literals
 from acos_client import errors as acos_errors
 from acos_client.v30 import base
 
-from typing import Optional, Dict, Tuple, List
+from ipaddress import IPv4Interface
 
 
 class Interface(base.BaseV30):
@@ -218,6 +218,7 @@ class VirtualEthernet(Interface):
         :param enable: (Optional) Enable interface
         :param ipv4_address: (Optional) List of Tuples that stores IPv4 Address and IPv4 Netmask
             of that interface. E.g ('192.168.255.1', '255.255.255.252')
+            OR List os IPs provided in the <host_ip>/<netmask> format. E.g ["10.1.11.1/24", "12.12.12.12/28"]
         :param dhcp: (Optional) Enable DHCP on the interface
         :param ipv4_nat_inside: (Optional) Enable Inside NAT on IPv4
         :param ipv6_address: (Optional) List of strs that stores IPv6 Addresses info in the
@@ -254,6 +255,7 @@ class VirtualEthernet(Interface):
         :param enable: (Optional) Enable interface
         :param ipv4_address: (Optional) List of Tuples that stores IPv4 Address and IPv4 Netmask
             of that interface. E.g ('192.168.255.1', '255.255.255.252')
+            OR List os IPs provided in the <host_ip>/<netmask> format. E.g ["10.1.11.1/24", "12.12.12.12/28"]
         :param dhcp: (Optional) Enable DHCP on the interface
         :param ipv4_nat_inside: (Optional) Enable Inside NAT on IPv4
         :param ipv6_address: (Optional) List of strs that stores IPv6 Addresses info in the
@@ -273,7 +275,8 @@ class VirtualEthernet(Interface):
 
     def _build_payload(
         self,
-        ifnum, name=None,
+        ifnum,
+        name=None,
         enable=None,
         ipv4_address=None,
         dhcp=None,
@@ -299,19 +302,34 @@ class VirtualEthernet(Interface):
                 }
             )
         if ipv4_address is not None and dhcp is None:
-            rv[self.iftype].update(
-                {
-                    "ip": {
-                        "address-list": [
-                            {
-                                "ipv4-address": ip,
-                                "ipv4-netmask": netmask
-                            }
-                            for ip, netmask in ipv4_address
-                        ]
+            if isinstance(ipv4_address, tuple):
+                rv[self.iftype].update(
+                    {
+                        "ip": {
+                            "address-list": [
+                                {
+                                    "ipv4-address": ip,
+                                    "ipv4-netmask": netmask
+                                }
+                                for ip, netmask in ipv4_address
+                            ]
+                        }
                     }
-                }
-            )
+                )
+            else:
+                rv[self.iftype].update(
+                    {
+                        "ip": {
+                            "address-list": [
+                                {
+                                    "ipv4-address": str(ip.ip),
+                                    "ipv4-netmask": str(ip.netmask)
+                                }
+                                for ip in map(lambda x: IPv4Interface(x), ipv4_address)
+                            ]
+                        }
+                    }
+                )
             if ipv4_nat_inside is not None:
                 rv[self.iftype]['ip'].update(
                     {

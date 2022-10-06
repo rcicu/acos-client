@@ -10,7 +10,6 @@ pipeline {
             agent {
                 dockerfile {
                     reuseNode true
-//                     args '--user 101992523 --group-add 118'
                 }
             }
             stages {
