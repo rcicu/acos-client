@@ -87,5 +87,8 @@ class BaseV30(object):
     @staticmethod
     def _build_url(prefix, middle, suffix):
         prefix = prefix if prefix.endswith("/") else f"{prefix}/"
-        suffix = suffix if suffix.endswith("/") else f"{suffix}/"
-        return f"{prefix}{middle}/{suffix}"
+        if suffix:
+            suffix = suffix if suffix.endswith("/") and prefix else f"{suffix}/"
+            return f"{prefix}{middle}/{suffix}"
+        else:
+            return f"{prefix}{middle}/"
