@@ -83,3 +83,12 @@ class BaseV30(object):
     def _is_ipv6(self, ip_address):
         validated_ip_address = ipaddress.ip_address(six.text_type(ip_address))
         return isinstance(validated_ip_address, ipaddress.IPv6Address)
+
+    @staticmethod
+    def _build_url(prefix, middle, suffix):
+        prefix = prefix if prefix.endswith("/") else f"{prefix}/"
+        if suffix:
+            suffix = suffix if suffix.endswith("/") and prefix else f"{suffix}/"
+            return f"{prefix}{middle}/{suffix}"
+        else:
+            return f"{prefix}{middle}/"

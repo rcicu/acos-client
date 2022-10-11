@@ -66,3 +66,6 @@ tags
 
 # vi tmp files
 *.swp
+
+# Jupyter
+*.ipynb
