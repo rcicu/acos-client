@@ -8,23 +8,23 @@ class BgpBase(BaseV30):
 
     def __init__(self, client):
         super(BgpBase, self).__init__(client=client)
-        self.url_prefix = f"/router/bgp/"
+        self.url_prefix = "/router/bgp/"
         self.url_suffix = ""
 
     def get_list(self, asn):
-        _url = self._build_url(prefix=self.url_prefix, middle=asn, suffix=self.url_suffix)
+        _url = self._build_url(middle=asn, suffix=self.url_suffix, ends_with_separator=True)
         print(f"GET List URL: {_url}")
         return self._get(_url)
 
     def get(self, asn, key=None):
         key = key if key is not None else ""
-        _url = self._build_url(prefix=self.url_prefix, middle=asn, suffix=self.url_suffix)
+        _url = self._build_url(middle=asn, suffix=self.url_suffix, ends_with_separator=True)
         _url = f"{_url}{key}"
         print(f"GET URL: {_url}")
         return self._get(_url)
 
     def delete(self, asn, key):
-        _url = self._build_url(prefix=self.url_prefix, middle=asn, suffix=self.url_suffix)
+        _url = self._build_url(middle=asn, suffix=self.url_suffix, ends_with_separator=True)
         _url = f"{_url}{key}"
         print(f"DELETE URL: {_url}")
         return self._delete(_url)
@@ -72,7 +72,7 @@ class NeighborIPv4(BgpBase):
             remote_as=remote_as,
             shutdown=shutdown
         )
-        _url = self._build_url(prefix=self.url_prefix, middle=asn, suffix=self.url_suffix)
+        _url = self._build_url(middle=asn, suffix=self.url_suffix, ends_with_separator=True)
         print(f"URL NeighborIPv4 Create: {_url}")
         return self._post(_url, payload)
 
@@ -112,7 +112,7 @@ class NeighborIPv4(BgpBase):
             send_community=send_community,
             shutdown=shutdown
         )
-        _url = self._build_url(prefix=self.url_prefix, middle=asn, suffix=self.url_suffix)
+        _url = self._build_url(middle=asn, suffix=self.url_suffix, ends_with_separator=True)
         pprint(f"Url NeighborIPv4 Update: {_url}")
         return self._post(f"{_url}{ip}", payload)
 
@@ -196,7 +196,7 @@ class NeighborIPv6(BgpBase):
             remote_as=remote_as,
             shutdown=shutdown
         )
-        _url = self._build_url(prefix=self.url_prefix, middle=asn, suffix=self.url_suffix)
+        _url = self._build_url(middle=asn, suffix=self.url_suffix, ends_with_separator=True)
         print(f"URL NeighborIPv4 Create: {_url}")
         return self._post(_url, payload)
 
@@ -236,7 +236,7 @@ class NeighborIPv6(BgpBase):
             send_community=send_community,
             shutdown=shutdown
         )
-        _url = self._build_url(prefix=self.url_prefix, middle=asn, suffix=self.url_suffix)
+        _url = self._build_url(middle=asn, suffix=self.url_suffix, ends_with_separator=True)
         pprint(f"Url NeighborIPv4 Update: {_url}")
         return self._post(f"{_url}{ip}", payload)
 
@@ -318,7 +318,7 @@ class PeerGroupIPv4Neighbor(BgpBase):
             shutdown=shutdown, next_hop_self=next_hop_self,
             rm_in=rm_in, rm_out=rm_out, send_community=send_community
         )
-        _url = self._build_url(prefix=self.url_prefix, middle=asn, suffix=self.url_suffix)
+        _url = self._build_url(middle=asn, suffix=self.url_suffix, ends_with_separator=True)
         print(f"URL PeerGroupIPv4Neighbor Create: {_url}")
         return self._post(_url, payload)
 
@@ -356,7 +356,7 @@ class PeerGroupIPv4Neighbor(BgpBase):
             shutdown=shutdown, next_hop_self=next_hop_self,
             rm_in=rm_in, rm_out=rm_out, send_community=send_community
         )
-        _url = self._build_url(prefix=self.url_prefix, middle=asn, suffix=self.url_suffix)
+        _url = self._build_url(middle=asn, suffix=self.url_suffix, ends_with_separator=True)
         print(f"URL PeerGroupIPv4Neighbor Update: {_url}")
         return self._post(f"{_url}{name}", payload)
 
@@ -447,7 +447,6 @@ class NeighborIpv6(BgpBase):
         :param ipv6: Neighbor IP Address
         :param asn: Local BGP ASN
         :param activate: Activate/DeActivate neighbor
-        :param multihop: Enable BGP multi-hp
         :param rm_in: Specify inbound RouteMap
         :param rm_out: Specify outbound RouteMap
         :param next_hop_self: Enable next-hop-self
@@ -462,7 +461,7 @@ class NeighborIpv6(BgpBase):
             next_hop_self=next_hop_self, activate=activate,
             rm_out=rm_out, rm_in=rm_in, peer_group_name=peer_group_name
         )
-        _url = self._build_url(prefix=self.url_prefix, middle=asn, suffix=self.url_suffix)
+        _url = self._build_url(middle=asn, suffix=self.url_suffix, ends_with_separator=True)
         print(f"URL NeighborIpv6 Create: {_url}")
         return self._post(_url, payload)
 
@@ -481,7 +480,6 @@ class NeighborIpv6(BgpBase):
         :param ipv6: Neighbor IP Address
         :param asn: Local BGP ASN
         :param activate: Activate/DeActivate neighbor
-        :param multihop: Enable BGP multi-hp
         :param rm_in: Specify inbound RouteMap
         :param rm_out: Specify outbound RouteMap
         :param next_hop_self: Enable next-hop-self
@@ -496,7 +494,7 @@ class NeighborIpv6(BgpBase):
             next_hop_self=next_hop_self, activate=activate,
             rm_out=rm_out, rm_in=rm_in, peer_group_name=peer_group_name
         )
-        _url = self._build_url(prefix=self.url_prefix, middle=asn, suffix=self.url_suffix)
+        _url = self._build_url(middle=asn, suffix=self.url_suffix, ends_with_separator=True)
         print(f"URL NeighborIpv6 Update: {_url}{ipv6}")
         return self._post(f"{_url}{ipv6}", payload)
 
@@ -561,7 +559,7 @@ class PeerGroupIpv6(BgpBase):
             send_community=send_community, next_hop_self=next_hop_self,
             max_prefix=max_prefix
         )
-        _url = self._build_url(prefix=self.url_prefix, middle=asn, suffix=self.url_suffix)
+        _url = self._build_url(middle=asn, suffix=self.url_suffix, ends_with_separator=True)
         print(f"URL PeerGroupIpv6 Create: {_url}")
         return self._post(_url, payload)
 
@@ -589,7 +587,7 @@ class PeerGroupIpv6(BgpBase):
             send_community=send_community, next_hop_self=next_hop_self,
             max_prefix=max_prefix
         )
-        _url = self._build_url(prefix=self.url_prefix, middle=asn, suffix=self.url_suffix)
+        _url = self._build_url(middle=asn, suffix=self.url_suffix, ends_with_separator=True)
         print(f"URL PeerGroupIpv6 Update: {_url}")
         return self._post(f"{_url}{name}", payload)
 
