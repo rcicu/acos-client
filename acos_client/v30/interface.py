@@ -248,7 +248,7 @@ class VirtualEthernet(Interface):
     ):
         """
         Update a VE interface with the provided values.
-        Don;t forget to create that interface form VLAN config, otherwise
+        Don't forget to create that interface form VLAN config, otherwise
         will fail to create
         :param ifnum: Interface number, according with VLAN ID [2-4094]
         :param name: (Optional) Set the name of the interface
