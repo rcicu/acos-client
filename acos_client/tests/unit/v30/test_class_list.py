@@ -121,7 +121,7 @@ class TestClassList(unittest.TestCase):
             }
         }
         self.client.http.request.assert_called_with(
-            "PUT", _url, expected_payload, mock.ANY, axapi_args=None, max_retries=None, timeout=mock.ANY,
+            "POST", _url, expected_payload, mock.ANY, axapi_args=None, max_retries=None, timeout=mock.ANY,
         )
 
     def test_class_list_update_v6(self):
