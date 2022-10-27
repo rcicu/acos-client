@@ -58,7 +58,7 @@ class ClassList(base.BaseV30):
 
     def replace(self, name, file=False, ipv4addr=None, lsn_lid=None, ipv6_addr=None, v6_lsn_lid=None):
         """
-        Update class-list with the given `name`. ipv4 and ipv6 addresses are mutually exclusive because
+        Replace class-list with the given `name`. ipv4 and ipv6 addresses are mutually exclusive because
         class-list type is determined according to ipv4-list or ipv6-list existence on device configuration.
 
         :param name: name of the class-list going to be created
