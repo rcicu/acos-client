@@ -56,6 +56,25 @@ class ClassList(base.BaseV30):
         """
         return self._delete(self._build_url(suffix=name))
 
+    def replace(self, name, file=False, ipv4addr=None, lsn_lid=None, ipv6_addr=None, v6_lsn_lid=None):
+        """
+        Replace class-list with the given `name`. ipv4 and ipv6 addresses are mutually exclusive because
+        class-list type is determined according to ipv4-list or ipv6-list existence on device configuration.
+
+        :param name: name of the class-list going to be created
+        :param file: Create/Edit a class-list stored as a file. default 0 and if True 1 else 0
+        :param ipv4addr: ipv4 address for ipv4-list
+        :param lsn_lid: LSN limit ID for ipv4-list
+        :param ipv6_addr: ipv6 address for ipv6-list
+        :param v6_lsn_lid: LSN limit ID for ipv6-list
+        :raise `acos_errors.NotFound` when the object does not exist and cannot be updated.
+        """
+        payload = self._build_payload(
+            name=name, file=file, ipv4addr=ipv4addr, lsn_lid=lsn_lid, ipv6_addr=ipv6_addr, v6_lsn_lid=v6_lsn_lid
+        )
+
+        return self._put(self._build_url(suffix=name), payload)
+
     def update(self, name, file=False, ipv4addr=None, lsn_lid=None, ipv6_addr=None, v6_lsn_lid=None):
         """
         Update class-list with the given `name`. ipv4 and ipv6 addresses are mutually exclusive because
@@ -73,7 +92,7 @@ class ClassList(base.BaseV30):
             name=name, file=file, ipv4addr=ipv4addr, lsn_lid=lsn_lid, ipv6_addr=ipv6_addr, v6_lsn_lid=v6_lsn_lid
         )
 
-        return self._put(self._build_url(suffix=name), payload)
+        return self._post(self._build_url(suffix=name), payload)
 
     def create_or_update(self, name, file=False, ipv4addr=None, lsn_lid=None, ipv6_addr=None, v6_lsn_lid=None):
         """
