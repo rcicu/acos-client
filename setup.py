@@ -13,20 +13,19 @@ except TypeError:
         long_description = f.read().decode('utf-8')
 
 setup(
-    name = "acos-client",
-    version = "2.102.0",
-    packages = find_packages(),
+    name="acos-client",
+    version="2.102.0",
+    packages=find_packages(),
+    author="A10 Networks",
+    author_email="opensource@a10networks.com",
+    description="A10 Networks ACOS API Client",
+    license="Apache",
+    keywords="a10 axapi acos adc slb load balancer",
+    url="https://github.com/a10networks/acos-client",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
 
-    author = "A10 Networks",
-    author_email = "opensource@a10networks.com",
-    description = "A10 Networks ACOS API Client",
-    license = "Apache",
-    keywords = "a10 axapi acos adc slb load balancer",
-    url = "https://github.com/a10networks/acos-client",
-    long_description = long_description,
-    long_description_content_type = "text/markdown",
-
-    classifiers = [
+    classifiers=[
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: MacOS :: MacOS X',
@@ -38,13 +37,14 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.8',
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
         'Topic :: Internet',
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
 
-    install_requires = ['requests>=2.3.0', 'six', 'uhashring'],
+    install_requires=['requests>=2.3.0', 'six', 'uhashring'],
 
     test_suite="acos_client.tests.test_suite"
 )
