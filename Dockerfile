@@ -16,7 +16,7 @@ RUN update-ca-certificates
 ENV REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
 
 # install dependencies
-RUN pip3 install tox twine pdoc3 isort black
+RUN pip3 install tox twine pdoc3 isort black flake8
 RUN pip3 install -r requirements.txt
 RUN pip3 install -r test-requirements.txt
 
