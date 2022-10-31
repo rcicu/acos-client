@@ -1,4 +1,4 @@
-FROM python:3.8-slim
+FROM python:3.6-slim
 
 ADD . /app
 WORKDIR /app
@@ -15,11 +15,9 @@ RUN mv ca-viasat-io.crt /usr/local/share/ca-certificates/ca-viasat-io-pki.crt
 RUN update-ca-certificates
 ENV REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
 
-RUN mkdir -p /.local && chmod -R 777 /.local
-
 # install dependencies
 RUN pip3 install pip setuptools --upgrade
-RUN pip3 install tox==3.26.0
+RUN pip3 install tox
 RUN pip3 install twine pdoc3 isort black
 RUN pip3 install -r requirements.txt
 RUN pip3 install -r test-requirements.txt
