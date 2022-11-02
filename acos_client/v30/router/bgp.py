@@ -292,7 +292,8 @@ class PeerGroupIPv4Neighbor(BgpBase):
         activate=None, multihop=None,
         shutdown=None, next_hop_self=None,
         rm_in=None, rm_out=None,
-        send_community=None
+        send_community=None,
+        inbound=None
     ):
         """
         Create IPv4 neighbor peer-group
@@ -310,16 +311,17 @@ class PeerGroupIPv4Neighbor(BgpBase):
         :param next_hop_self: Enable next-hop-self
         :param send_community: Specify where to send community
             Allowed values: "both", "none", "standard", "extended"
+        :param inbound: Allow inbound soft reconfiguration for this neighbor
         :return Dict:
         """
         payload = self._build_payload(
             name=name, remote_as=remote_as, bfd=bfd,
             route_refresh=route_refresh, activate=activate, multihop=multihop,
             shutdown=shutdown, next_hop_self=next_hop_self,
-            rm_in=rm_in, rm_out=rm_out, send_community=send_community
+            rm_in=rm_in, rm_out=rm_out, send_community=send_community,
+            inbound=inbound
         )
         _url = self._build_url(middle=asn, suffix=self.url_suffix, ends_with_separator=True)
-        print(f"URL PeerGroupIPv4Neighbor Create: {_url}")
         return self._post(_url, payload)
 
     def update(
@@ -330,7 +332,8 @@ class PeerGroupIPv4Neighbor(BgpBase):
         activate=None, multihop=None,
         shutdown=None, next_hop_self=None,
         rm_in=None, rm_out=None,
-        send_community=None
+        send_community=None,
+        inbound=None
     ):
         """
         Update IPv4 neighbor peer-group
@@ -348,16 +351,17 @@ class PeerGroupIPv4Neighbor(BgpBase):
         :param next_hop_self: Enable next-hop-self
         :param send_community: Specify where to send community
             Allowed values: "both", "none", "standard", "extended"
+        :param inbound: Allow inbound soft reconfiguration for this neighbor
         :return Dict:
         """
         payload = self._build_payload(
             name=name, remote_as=remote_as, bfd=bfd,
             route_refresh=route_refresh, activate=activate, multihop=multihop,
             shutdown=shutdown, next_hop_self=next_hop_self,
-            rm_in=rm_in, rm_out=rm_out, send_community=send_community
+            rm_in=rm_in, rm_out=rm_out, send_community=send_community,
+            inbound=inbound
         )
         _url = self._build_url(middle=asn, suffix=self.url_suffix, ends_with_separator=True)
-        print(f"URL PeerGroupIPv4Neighbor Update: {_url}")
         return self._post(f"{_url}{name}", payload)
 
     @staticmethod
@@ -367,7 +371,8 @@ class PeerGroupIPv4Neighbor(BgpBase):
         activate=None, multihop=None,
         shutdown=None, next_hop_self=None,
         rm_in=None, rm_out=None,
-        send_community=None
+        send_community=None,
+        inbound=None
     ):
         rv = {
             'peer-group-key': 1,
@@ -418,6 +423,8 @@ class PeerGroupIPv4Neighbor(BgpBase):
             rv['route-refresh'] = 1 if route_refresh is True else 0
         if next_hop_self is not None:
             rv['next-hop-self'] = 1 if next_hop_self is True else 0
+        if inbound is not None:
+            rv['inbound'] = 1 if next_hop_self is True else 0
         if rm_in is not None or rm_out is not None:
             rv['neighbor-route-map-lists'] = create_route_map_structure(rm_in=rm_in, rm_out=rm_out)
         # return rv
@@ -539,7 +546,8 @@ class PeerGroupIpv6(BgpBase):
         name, asn, activate=None,
         send_community=None,
         next_hop_self=None,
-        max_prefix=None
+        max_prefix=None,
+        inbound=None
     ):
         """
         For IPv6, in order to use a peergroup that you created before,
@@ -552,15 +560,15 @@ class PeerGroupIpv6(BgpBase):
         :param next_hop_self: Enable next-hop-self
         :param send_community: Specify where to send community
             Allowed values: "both", "none", "standard", "extended"
+        :param inbound: Allow inbound soft reconfiguration for this neighbor
         :return Dict:
         """
         payload = self._build_payload(
             name=name, activate=activate,
             send_community=send_community, next_hop_self=next_hop_self,
-            max_prefix=max_prefix
+            max_prefix=max_prefix, inbound=inbound
         )
         _url = self._build_url(middle=asn, suffix=self.url_suffix, ends_with_separator=True)
-        print(f"URL PeerGroupIpv6 Create: {_url}")
         return self._post(_url, payload)
 
     def update(
@@ -568,7 +576,8 @@ class PeerGroupIpv6(BgpBase):
         name, asn, activate=None,
         send_community=None,
         next_hop_self=None,
-        max_prefix=None
+        max_prefix=None,
+        inbound=None
     ):
         """
         Update IPv6 peer-group values
@@ -580,15 +589,15 @@ class PeerGroupIpv6(BgpBase):
         :param next_hop_self: Enable next-hop-self
         :param send_community: Specify where to send community
             Allowed values: "both", "none", "standard", "extended"
+        :param inbound: Allow inbound soft reconfiguration for this neighbor
         :return Dict:
         """
         payload = self._build_payload(
             name=name, activate=activate,
             send_community=send_community, next_hop_self=next_hop_self,
-            max_prefix=max_prefix
+            max_prefix=max_prefix, inbound=inbound
         )
         _url = self._build_url(middle=asn, suffix=self.url_suffix, ends_with_separator=True)
-        print(f"URL PeerGroupIpv6 Update: {_url}")
         return self._post(f"{_url}{name}", payload)
 
     @staticmethod
@@ -596,7 +605,8 @@ class PeerGroupIpv6(BgpBase):
         name, activate=None,
         send_community=None,
         next_hop_self=None,
-        max_prefix=None
+        max_prefix=None,
+        inbound=None
     ):
         rv = {'allowas-in': 0, 'default-originate': 0, 'inbound': 0, 'maximum-prefix': 128, 'next-hop-self': 0,
               'peer-group': name, 'remove-private-as': 0, 'send-community-val': 'both'}
@@ -612,6 +622,8 @@ class PeerGroupIpv6(BgpBase):
             rv['next-hop-self'] = 1 if next_hop_self is True else 0
         if max_prefix is not None:
             rv['maximum-prefix'] = max_prefix
+        if inbound is not None:
+            rv['inbound'] = 1 if next_hop_self is True else 0
         return {
             "peer-group-neighbor": rv
         }
